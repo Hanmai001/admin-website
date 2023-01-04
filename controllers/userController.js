@@ -91,7 +91,34 @@ let getHomepage = async (req, res) => {
         products, brands, types, manufacturers, names: random_names, pagination_info, iterator, endingLink
     });
 }
-
+let handleForgotPassword = async (req, res) => {
+    const { newPass, confPass } = req.body;
+    console.log(req.body)
+    if (!newPass || !confPass) {
+        req.flash('resetPassMsg', 'Vui lòng nhập đủ thông tin.');
+        return res.redirect(`/reset-password?iduser=${req.params.id}`);
+    }
+    if (newPass.length < 6 || confPass.length < 6) {
+        req.flash('resetPassMsg', 'Mật khẩu phải ít nhất 6 ký tự.');
+        return res.redirect(`/reset-password?iduser=${req.params.id}`);
+    }
+    if (newPass !== confPass) {
+        req.flash('resetPassMsg', 'Xác nhận mật khẩu không trùng.');
+        return res.redirect(`/reset-password?iduser=${req.params.id}`);
+    }
+    const result = await userService.updatePassword(req.body, req.params.id);
+    if (result) {
+        const result = await authService.getUserByID(req.params.id);
+        req.login(result, function (err) {
+            console.log(result)
+            if (result.ADMIN === '1')
+                res.redirect('/static');
+            else
+                res.redirect('/');
+        });
+    }
+}
 module.exports = {
-    getHomepage
+    getHomepage,
+    handleForgotPassword
 }

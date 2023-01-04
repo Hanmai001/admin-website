@@ -50,6 +50,7 @@ const initUserRoute = (app) => {
     router.get('/manage/details-user/:id', authController.isLoggedAdmin, adminUserController.getDetailsUser);
     router.get('/users-manage/:id/ban', authController.isLoggedAdmin, adminUserController.banUser);
     router.get('/users-manage/:id/unban', authController.isLoggedAdmin, adminUserController.unbanUser);
+    router.post('/reset-password/:id', userController.handleForgotPassword);
 
     //Web của ta bđau = '/', truyền router vào
     return app.use('/', router);
